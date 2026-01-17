@@ -1,17 +1,25 @@
-let counter = 0;
-
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const links = [
-    "https://chat.whatsapp.com/HsaBuLsrdPO4V21yjIQv47",
-    "https://chat.whatsapp.com/LgnVlowLUYT9cZae0bEI5V",
-    "https://chat.whatsapp.com/D4qSliHepxsEVmCFHm7fZK",
-    "https://chat.whatsapp.com/KFm5iHFYDgdA5RJ7LXWddZ",
-    "https://chat.whatsapp.com/Db2qc5V6ramIhAMh3eLcIC"
+    "https://chat.whatsapp.com/KXI7pxgaYn4I0sXDczZRLt",
+    "https://chat.whatsapp.com/BhLlRfH72t3ApL6dkJwsxs",
+    "https://chat.whatsapp.com/JNUmyUeOxfs7uC1wkxvi8B"
   ];
 
-  const link = links[counter % links.length];
-  counter++;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-  res.writeHead(302, { Location: link });
+  const response = await fetch(`${url}/incr/global_counter`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const data = await response.json();
+  const count = data.result;
+
+  const index = (count - 1) % links.length;
+  const redirectUrl = links[index];
+
+  res.writeHead(302, { Location: redirectUrl });
   res.end();
 }
