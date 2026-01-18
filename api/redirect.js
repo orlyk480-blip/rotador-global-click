@@ -26,3 +26,4 @@ export default async function handler(req, res) {
   res.writeHead(302, { Location: redirectUrl });
   res.end();
 }
+// redeploy
